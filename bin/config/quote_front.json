@@ -1,0 +1,25 @@
+{
+  "zmq": {
+    "zmq_address": "epgm://192.168.1.178;239.0.0.1:5555",
+    "zmq_rate": 100000,
+    "zmq_rcvbuf": 5000000,
+    "zmq_rcvhwm": 100000,
+    "zmq_recover": 10000
+  },  
+  "log":{
+	"logLevel": 0,
+	"logPath": "./log",
+	"hour": 2,
+	"min": 30
+  },  
+  "tcpserver":{
+	"port": 11800,
+	"maxconnect":3000,
+	"perloopmaxconnect":1,
+	"maxiothread":10
+  },
+ "application":{
+	"cirbuffmaxsize": 500,
+	"loginuser": "zd987#"
+  }    
+}

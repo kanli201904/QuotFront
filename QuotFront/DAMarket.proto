@@ -1,0 +1,141 @@
+syntax = "proto3";
+option cc_enable_arenas = true;
+
+package DAMarket;
+
+message Market
+{
+// 报文类型
+enum MsgType {
+	HEART_BEAT = 0;
+	REAL_DATA = 1;
+	DEAL_DATA = 2;
+}
+
+// 市场标识
+enum ExchangeID {
+	EX_NONE = 0; // 无
+	EX_HKEX = 1; // 港交所
+	EX_SGX = 2; // 新加坡
+	EX_NASD = 3; // 纳斯达克
+	EX_NYEX = 4; // 纽交所
+	EX_CME = 5; // CME
+	EX_SH = 6; // 上证所
+	EX_SZ = 7; // 深证所
+	EX_SHFE = 8; // 上交所
+	EX_CFFEX = 9; // 中金所
+	EX_DCE = 10; // 大连
+	EX_CZCE = 11; // 郑州
+	EX_INE = 12; // 上海能源
+}
+
+// 直达市场数据消息头
+message Head
+{	
+	uint64 timestamp = 1;
+	// 行情类型
+	MsgType type = 2;
+	// 市场标识
+	ExchangeID exchange = 3;
+	// 标的标识
+	uint32 instrument = 4;
+	// 发送序号
+	uint32 sequence = 5;
+	// 累计穿透延迟（纳秒）
+	uint32 latency = 6;
+	// 数据源标识
+	uint32 source = 7;
+	// 保留位图
+	uint32 bitmap = 8;
+	// 行情消息体长度
+	uint32 length = 9;
+}
+
+// 市场状态
+enum MarketStatus {
+	NOT_TRADING = 0; // 非交易
+	PREO = 1; // 盘前
+	TRADING = 2; // 盘中
+	POST =3; // 盘后
+}
+
+// 报价
+message PriceData {
+	double price=1;//价格
+	uint32 volume=7;//数量
+}
+
+// 数据
+message Data
+{
+	//现价
+	double current_price=1;
+	//现量
+	uint32 current_volume=2;
+	//成交量
+	uint64 volume=3;
+	//成交额
+	uint64 turnover=4;
+	//买1价
+	double buy_1_price=5;
+	//卖1价
+	double sell_1_price=6;
+	//买1量
+	uint32 buy_1_volume=7;
+	//卖1量
+	uint32 sell_1_volume=8;
+	//最高价
+	double max_price=9;
+	//最低价
+	double min_price=10;
+	//开盘价
+	double open_price=11;
+	//收盘价
+	double close_price=12;
+	//涨停价
+	double high_limit=13;
+	//跌停价
+	double low_limit=14;
+	//持仓量
+	uint64 open_interest=15;
+	//结算价
+	double settle_price=16;
+	//上日收盘价
+	double pre_close=17;
+	//上日结算价
+	double pre_settle=18;
+	//盘前最新价
+	double preo_price=19;
+	//盘后最新价
+	double post_price=20;
+	// 交易状态
+	MarketStatus market_status=21;
+}
+
+//深度盘口数据（不含一档）
+message Depth
+{
+	repeated PriceData Bids=1; // 买档
+	repeated PriceData Asks=2; // 卖档
+}
+
+//成交数据
+message Deal
+{
+	double deal_price=1;//成交价
+	uint32 deal_volume=2;//成交量
+	uint64 timestamp=3;//时间
+}
+
+//心跳
+message HeartBeat
+{
+	uint64 timestamp=1;//时间
+}
+
+Head head=1;
+Data data=2;
+Depth depth=3;// 深度数据
+Deal deal=4;// 成交数据
+HeartBeat heartbeat=5;
+}

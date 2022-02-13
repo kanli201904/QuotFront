@@ -1,0 +1,178 @@
+syntax = "proto3";
+
+package da.marketdata.v1;
+
+import "google/protobuf/any.proto";
+
+option optimize_for = SPEED;
+//option cc_enable_arenas = true;
+
+// 市场消息
+message DAMarketDataMessage
+{
+	// 市场标识
+	string market = 1;
+	// 标的标识
+	string instrument = 2;
+
+	// 行情源时间戳
+	uint64 timestamp = 3;
+	// 累计穿透延迟
+	uint64 latency = 4;
+
+	// 消息正文
+	google.protobuf.Any data = 5;
+}
+
+// 市场数据包
+message DAMarketDataPacket
+{
+	// 主题号
+	uint32 topic = 1;
+	// 通道号
+	uint32 channel = 2;
+
+	// 行情源序列号
+	uint32 sequence = 3;
+	// 切片时间戳
+	uint64 timestamp = 4;
+
+	// 消息
+	repeated DAMarketDataMessage messages = 5;
+}
+
+// 订单簿条目
+message DAOrderBookEntry
+{
+	// 价格
+	double price = 1;
+	// 数量
+	uint32 quantity = 2;
+	// 订单
+	repeated uint32 num_orders = 3;
+}
+
+// 深度盘口
+message DAOrderBookMessage
+{
+	enum BookType
+	{
+		// 未定义
+		BOOK_TYPE_UNDEFINED = 0;
+		// MBP
+		BOOK_TYPE_MARKET_BY_PRICE = 1;
+		// MBO
+		BOOK_TYPE_MARKET_BY_ORDER = 2;
+	}
+	// 订单簿类型
+	BookType book_type = 1;
+	// 申卖队列
+	repeated DAOrderBookEntry ask_queue = 2;
+	// 申买队列
+	repeated DAOrderBookEntry bid_queue = 3;
+}
+
+// 一档盘口
+message DATopOfBookAndLastTradeMessage
+{
+	// 最新价
+	double last_price = 1;
+	// 最新量
+	uint32 last_volume = 2;
+
+	// 卖一价
+	double ask_price = 3;
+	// 卖一量
+	uint32 ask_volume = 4;
+	// 买一价
+	double bid_price = 5;
+	// 买一量
+	uint32 bid_volume = 6;
+
+	// 成交额
+	double turnover = 7;
+	// 持仓量
+	uint64 open_interest = 8;
+	// 成交量
+	uint64 volume = 9;
+	// 盘前最新价
+	double preo_price = 10;
+	// 盘后最新价
+	double post_price = 11;
+}
+
+// 交易统计
+message DATradeStatisticsMessage
+{
+	// 昨收价
+	double pre_close_price = 1;
+	// 昨结价
+	double pre_settlement_price = 2;
+	// 昨持仓
+	uint64 pre_open_interest = 3;
+
+	// 开盘价
+	double open_price = 4;
+	// 收盘价
+	double close_price = 5;
+	// 结算价
+	double settlement_price = 6;
+
+	// 当日最高价
+	double day_highest_price = 7;
+	// 当日最低价
+	double day_lowest_price = 8;
+
+	// 涨停价
+	double upper_limit_price = 9;
+	// 跌停价
+	double lower_limit_price = 10;
+}
+
+// 状态消息
+message DAStatusMessage
+{
+	enum StatusType
+	{
+		// 未定义
+		STATUS_TYPE_UNDEFINED = 0;
+		// 市场状态
+		STATUS_TYPE_MARKET = 1;
+		// 合约状态
+		STATUS_TYPE_INSTRUMENT = 2;
+	}
+	// 状态类型
+	StatusType status_type = 1;
+	// 发生时间
+	uint64 datetime = 2;
+	enum TradeStatus
+	{
+		STATUS_NOT_TRADING = 0; // 非交易
+		STATUS_PREO = 1; // 盘前
+		STATUS_TRADING = 2; // 盘中
+		STATUS_POST =3; // 盘后
+	}
+	TradeStatus status = 3;
+	// 状态描述
+	string description = 4;
+}
+
+// BB Message
+message DABBMessage
+{
+	// 一档盘口
+	DATopOfBookAndLastTradeMessage top_message= 1;
+	// 深度盘口
+	DAOrderBookMessage order_book = 2;
+	// 统计信息
+	DATradeStatisticsMessage statics = 3;
+	// 状态信息
+	DAStatusMessage status = 4;
+}
+
+// 心跳消息
+message DAHeartbeatMessage
+{
+	// 日期时间
+	uint64 datetime = 1;
+}
